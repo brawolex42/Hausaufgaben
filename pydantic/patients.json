@@ -1,0 +1,20 @@
+[
+    {
+        "id": "2af9e2ab-015b-47bb-8091-c5bdd5c5dd35",
+        "firstName": "Ivan",
+        "lastName": "Petrov",
+        "registration_time": "2025-06-13 21:16:26.174488"
+    },
+    {
+        "id": "f668122c-0a9c-492a-891e-6de8d033ed92",
+        "firstName": "Anna",
+        "lastName": "Ivanova",
+        "registration_time": "2025-06-13 21:16:26.174488"
+    },
+    {
+        "id": "93c5acb7-009d-4982-bd9a-f2e5e067fdf4",
+        "firstName": "Sergey",
+        "lastName": "Smirnov",
+        "registration_time": "2025-06-13 21:16:26.174488"
+    }
+]
