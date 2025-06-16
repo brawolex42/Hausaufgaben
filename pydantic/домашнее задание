@@ -193,3 +193,74 @@ for i, json_input in enumerate(test_cases, 1):
     print(f"\nTest Case {i}:")
     result = process_user_registration(json_input)
     print(json.dumps(result, indent=2, ensure_ascii=False))
+
+####################################
+Python Advanced: Домашнее задание 3
+
+Задача 1: Создайте экземпляр движка для подключения к SQLite базе данных в памяти.
+
+Задача 2: Создайте сессию для взаимодействия с базой данных, используя созданный движок.
+
+Задача 3: Определите модель продукта Product со следующими типами колонок:
+
+    id: числовой идентификатор
+
+    name: строка (макс. 100 символов)
+
+    price: числовое значение с фиксированной точностью
+
+    in_stock: логическое значение
+
+Задача 4: Определите связанную модель категории Category со следующими типами колонок:
+
+    id: числовой идентификатор
+
+    name: строка (макс. 100 символов)
+
+    description: строка (макс. 255 символов)
+
+Задача 5: Установите связь между таблицами Product и Category с помощью колонки category_id.
+
+
+from sqlalchemy import create_engine, Column, Integer, String, Boolean, Numeric, ForeignKey
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, relationship
+
+# Задача 1: Создание движка для SQLite базы данных в памяти
+engine = create_engine("sqlite:///:memory:", echo=True)
+
+# Задача 2: Создание сессии
+Session = sessionmaker(bind=engine)
+session = Session()
+
+# Базовый класс моделей
+Base = declarative_base()
+
+# Задача 4: Модель Category
+class Category(Base):
+    __tablename__ = 'categories'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100), nullable=False)
+    description = Column(String(255))
+
+    # Связь: одна категория ко многим продуктам
+    products = relationship("Product", back_populates="category")
+
+# Задача 3 и 5: Модель Product со связью к Category
+class Product(Base):
+    __tablename__ = 'products'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100), nullable=False)
+    price = Column(Numeric(10, 2))
+    in_stock = Column(Boolean, default=True)
+
+    # Задача 5: Внешний ключ на Category
+    category_id = Column(Integer, ForeignKey('categories.id'))
+
+    # Связь: продукт принадлежит категории
+    category = relationship("Category", back_populates="products")
+
+# Создание таблиц в базе данных
+Base.metadata.create_all(engine)
