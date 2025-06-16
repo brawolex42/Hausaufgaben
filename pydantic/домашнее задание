@@ -1,1 +1,195 @@
+from pydantic import BaseModel, EmailStr, field_validator, ValidationError
+from typing import Optional
+import json
+import re
 
+# Модель для адреса
+class Address(BaseModel):
+    city: str
+    street: str
+    house_number: int
+
+    @field_validator('city')
+    @classmethod
+    def city_must_be_valid(cls, v: str) -> str:
+        if len(v) < 2:
+            raise ValueError('City must be at least 2 characters long')
+        return v
+
+    @field_validator('street')
+    @classmethod
+    def street_must_be_valid(cls, v: str) -> str:
+        if len(v) < 3:
+            raise ValueError('Street must be at least 3 characters long')
+        return v
+
+    @field_validator('house_number')
+    @classmethod
+    def house_number_must_be_positive(cls, v: int) -> int:
+        if v <= 0:
+            raise ValueError('House number must be positive')
+        return v
+
+# Модель для пользователя
+class User(BaseModel):
+    name: str
+    age: int
+    email: EmailStr
+    is_employed: bool
+    address: Address
+
+    @field_validator('name')
+    @classmethod
+    def name_must_be_letters(cls, v: str) -> str:
+        if not re.match(r'^[A-Za-z\s]+$', v):
+            raise ValueError('Name must contain only letters and spaces')
+        if len(v.strip()) < 2:
+            raise ValueError('Name must be at least 2 characters long')
+        return v
+
+    @field_validator('age')
+    @classmethod
+    def age_must_be_valid(cls, v: int) -> int:
+        if not 0 <= v <= 120:
+            raise ValueError('Age must be between 0 and 120')
+        return v
+
+    @field_validator('is_employed')
+    @classmethod
+    def employment_age_validation(cls, v: bool, values: dict) -> bool:
+        if v and 'age' in values.data:  # Если is_employed=True
+            if not 18 <= values.data['age'] <= 65:
+                raise ValueError('Employed users must be between 18 and 65 years old')
+        return v
+
+# Функция для обработки JSON
+def process_user_registration(json_input: str) -> dict:
+    try:
+        # Десериализация JSON в объект Pydantic
+        user = User.model_validate_json(json_input)
+        # Сериализация объекта обратно в JSON
+        return {
+            "status": "success",
+            "user": user.model_dump(),
+            "json_output": user.model_dump_json(indent=2)
+        }
+    except ValidationError as e:
+        # Преобразуем ошибки валидации в JSON-сериализуемый формат
+        errors = [
+            {
+                "loc": err["loc"],
+                "msg": err["msg"],
+                "type": err["type"],
+                "input": err.get("input", None)
+            }
+            for err in e.errors()
+        ]
+        return {
+            "status": "error",
+            "errors": errors
+        }
+    except json.JSONDecodeError as e:
+        return {
+            "status": "error",
+            "errors": [{"msg": f"Invalid JSON format: {str(e)}"}]
+        }
+
+# Примеры JSON для тестирования
+test_cases = [
+    # Успешный случай
+    """{
+        "name": "John Smith",
+        "age": 30,
+        "email": "john.smith@example.com",
+        "is_employed": true,
+        "address": {
+            "city": "London",
+            "street": "Baker Street",
+            "house_number": 221
+        }
+    }""",
+
+    # Успешный случай (не работает, возраст < 18)
+    """{
+        "name": "Alice Brown",
+        "age": 16,
+        "email": "alice.brown@example.com",
+        "is_employed": false,
+        "address": {
+            "city": "Paris",
+            "street": "Champs Elysees",
+            "house_number": 10
+        }
+    }""",
+
+    # Ошибка: возраст не соответствует статусу занятости
+    """{
+        "name": "John Doe",
+        "age": 70,
+        "email": "john.doe@example.com",
+        "is_employed": true,
+        "address": {
+            "city": "New York",
+            "street": "5th Avenue",
+            "house_number": 123
+        }
+    }""",
+
+    # Ошибка: некорректное имя (содержит цифры)
+    """{
+        "name": "John123",
+        "age": 25,
+        "email": "john123@example.com",
+        "is_employed": true,
+        "address": {
+            "city": "Berlin",
+            "street": "Unter den Linden",
+            "house_number": 1
+        }
+    }""",
+
+    # Ошибка: некорректный email
+    """{
+        "name": "Emma Watson",
+        "age": 25,
+        "email": "invalid-email",
+        "is_employed": true,
+        "address": {
+            "city": "Rome",
+            "street": "Via Roma",
+            "house_number": 5
+        }
+    }""",
+
+    # Ошибка: город слишком короткий
+    """{
+        "name": "Robert Johnson",
+        "age": 40,
+        "email": "robert.j@example.com",
+        "is_employed": true,
+        "address": {
+            "city": "A",
+            "street": "Main Street",
+            "house_number": 15
+        }
+    }""",
+
+    # Ошибка: некорректный JSON
+    """{
+        "name": "Invalid JSON",
+        "age": 30,
+        "email": "invalid.json@example.com",
+        "is_employed": true,
+        "address": {
+            "city": "Tokyo",
+            "street": "Shibuya",
+            "house_number": 100
+        }
+    """
+]
+
+# Тестирование всех случаев
+for i, json_input in enumerate(test_cases, 1):
+    print(f"\nTest Case {i}:")
+    result = process_user_registration(json_input)
+    print(json.dumps(result, indent=2, ensure_ascii=False))
