@@ -264,3 +264,99 @@ class Product(Base):
 
 # Создание таблиц в базе данных
 Base.metadata.create_all(engine)
+
+################################################################################################
+
+from pathlib import Path
+from sqlalchemy import create_engine, Column, Integer, String, Boolean, Numeric, ForeignKey
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, relationship
+
+# Путь к базе данных (совместимо с вашим проектом)
+proj_path = Path(__file__).parent.parent.parent  # C:\Users\B.Nutzer\PycharmProjects\flaskProject
+engine = create_engine(
+    url=f"sqlite:///{proj_path}/database.db",  # Используем файл вместо памяти
+    echo=True
+)
+
+# Базовый класс
+Base = declarative_base()
+
+# Класс DBConnector (из вашего praktika.py)
+class DBConnector:
+    def __init__(self, engine):
+        self.engine = engine
+        self.Session = sessionmaker(bind=engine)
+
+    def __enter__(self):
+        self.session = self.Session()
+        return self.session
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.session.close()
+
+# Модель Category
+class Category(Base):
+    __tablename__ = 'categories'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100), nullable=False)
+    description = Column(String(255))
+    products = relationship("Product", back_populates="category")
+
+# Модель Product
+class Product(Base):
+    __tablename__ = 'products'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100), nullable=False)
+    price = Column(Numeric(10, 2))
+    in_stock = Column(Boolean, default=True)
+    category_id = Column(Integer, ForeignKey('categories.id'))
+    category = relationship("Category", back_populates="products")
+
+# Создание таблиц
+Base.metadata.create_all(engine)
+
+# Пример работы с данными
+try:
+    with DBConnector(engine) as session:
+        print("SQLite подключение успешно!")
+        
+        # Добавление категорий
+        existing_category = session.query(Category).filter_by(name="Electronics").first()
+        if not existing_category:
+            new_category = Category(
+                name="Electronics",
+                description="Gadgets and devices"
+            )
+            session.add(new_category)
+            session.commit()
+            print("Категория добавлена!")
+        
+        # Добавление продуктов
+        existing_product = session.query(Product).filter_by(name="Smartphone").first()
+        if not existing_product:
+            electronics = session.query(Category).filter_by(name="Electronics").first()
+            new_product = Product(
+                name="Smartphone",
+                price=699.99,
+                in_stock=True,
+                category_id=electronics.id
+            )
+            session.add(new_product)
+            session.commit()
+            print("Продукт добавлен!")
+        
+        # Чтение данных
+        categories = session.query(Category).all()
+        for category in categories:
+            print(f"Category ID: {category.id}, Name: {category.name}, Description: {category.description}")
+            for product in category.products:
+                print(f"  Product ID: {product.id}, Name: {product.name}, Price: {product.price}, In Stock: {product.in_stock}")
+except Exception as e:
+    print(f"Ошибка при работе с SQLite: {e}")
+
+# Проверка структуры таблиц
+from sqlalchemy import inspect
+inspector = inspect(engine)
+print("Таблица categories:", inspector.get_columns('categories'))
+print("Таблица products:", inspector.get_columns('products'))
