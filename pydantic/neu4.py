@@ -372,48 +372,4 @@ for i, json_input in enumerate(test_cases, 1):
 
     ########################################################################
 
-    import subprocess
-    import os
-
-
-    def run_git_command(command):
-        """Выполняет команду Git и возвращает результат."""
-        try:
-            result = subprocess.run(command, shell=True, check=True, text=True, capture_output=True)
-            print(result.stdout)
-        except subprocess.CalledProcessError as e:
-            print(f"Ошибка: {e.stderr}")
-
-
-    def add_file_to_git(repo_path, file_path, commit_message, remote_url=None, branch="main"):
-        """Добавляет и отправляет конкретный файл в Git."""
-        # Проверяем, существует ли директория
-        if not os.path.exists(repo_path):
-            raise FileNotFoundError(f"Директория не найдена: {repo_path}")
-
-        # Переходим в директорию репозитория
-        os.chdir(repo_path)
-
-        # Проверяем, существует ли репозиторий, если нет — инициализируем
-        if not os.path.exists(".git"):
-            run_git_command("git init")
-
-        # Добавляем конкретный файл
-        run_git_command(f"git add {file_path}")
-
-        # Создаём коммит
-        run_git_command(f'git commit -m "{commit_message}"')
-
-        # Если указан удалённый репозиторий, отправляем изменения
-        if remote_url:
-            run_git_command(f"git remote add origin {remote_url}")
-            run_git_command(f"git push -u origin {branch}")
-
-
-    # Исправленные параметры
-    repo_path = r"C:\Users\B.Nutzer\PycharmProjects\flaskProject"  # Путь к вашему репозиторию
-    file_path = "pydantic/neu4.py"  # Путь к файлу относительно репозитория
-    commit_message = "Добавлен pydantic/neu4.py"
-    remote_url = "https://github.com/ваш_пользователь/ваш_репозиторий.git"  # Замените на ваш URL
-
-    add_file_to_git(repo_path, file_path, commit_message, remote_url)
+   
