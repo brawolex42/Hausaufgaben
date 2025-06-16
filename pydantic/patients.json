@@ -1,20 +1,20 @@
 [
     {
-        "id": "2af9e2ab-015b-47bb-8091-c5bdd5c5dd35",
+        "id": "4710b06e-44cb-4cd0-b12a-3fa6cad52a3b",
         "firstName": "Ivan",
         "lastName": "Petrov",
-        "registration_time": "2025-06-13 21:16:26.174488"
+        "registration_time": "2025-06-14 09:49:28.150402"
     },
     {
-        "id": "f668122c-0a9c-492a-891e-6de8d033ed92",
+        "id": "25354358-113f-4406-844b-2c3eda49bc6c",
         "firstName": "Anna",
         "lastName": "Ivanova",
-        "registration_time": "2025-06-13 21:16:26.174488"
+        "registration_time": "2025-06-14 09:49:28.150402"
     },
     {
-        "id": "93c5acb7-009d-4982-bd9a-f2e5e067fdf4",
+        "id": "4e9faa59-ba9a-4451-b6ca-04eb0f394e78",
         "firstName": "Sergey",
         "lastName": "Smirnov",
-        "registration_time": "2025-06-13 21:16:26.174488"
+        "registration_time": "2025-06-14 09:49:28.150402"
     }
 ]
