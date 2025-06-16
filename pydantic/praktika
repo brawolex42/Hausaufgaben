@@ -1,1 +1,431 @@
+# from pathlib import Path
+# from sqlalchemy import create_engine, text, Column, Integer, String, Float
+# from sqlalchemy.orm import sessionmaker, declarative_base
+# from pymongo import MongoClient
+# from pymongo.errors import ConfigurationError, ConnectionFailure, OperationFailure
+#
+# # Путь к SQLite
+# proj_path = Path(__file__).parent.parent  # C:\Users\B.Nutzer\PycharmProjects\flaskProject
+# engine = create_engine(
+#     url=f"sqlite:///{proj_path}/database.db",
+#     echo=True  # Для отладки SQL-запросов
+# )
+#
+# # Инициализация базового класса
+# Base = declarative_base()
+#
+# # Класс DBConnector
+# class DBConnector:
+#     def __init__(self, engine):
+#         self.engine = engine
+#         self.Session = sessionmaker(bind=engine)
+#
+#     def __enter__(self):
+#         self.session = self.Session()
+#         return self.session
+#
+#     def __exit__(self, exc_type, exc_val, exc_tb):
+#         self.session.close()
+#
+# # Модель Mineral
+# class Mineral(Base):
+#     __tablename__ = 'minerals'
+#
+#     id = Column(Integer, primary_key=True)
+#     name = Column(String(50), unique=True, nullable=False)
+#     color = Column(String(150))
+#     hardness = Column(Float)
+#
+# # Подключение к MySQL
+# mysql_engine = create_engine(
+#     url="mysql+pymysql://ich1:ich1_password_ilovedbs@ich-edit.edu.itcareerhub.de:3306/alchemy_lesson"
+# )
+#
+# # Подключение к MongoDB
+# mongo_connection_string = (
+#     "mongodb://ich_editor:verystrongpassword@mongo.itcareerhub.de:27017/"
+#     "?readPreference=primary&ssl=false&authMechanism=DEFAULT&authSource=ich_edit"
+# )
+#
+# # Создание таблиц в SQLite
+# Base.metadata.create_all(bind=engine)
+#
+# # Экспорт объектов
+# __all__ = ('engine', 'Base', 'DBConnector', 'Mineral')
+#
+# # Проверка подключений
+# # SQLite
+# try:
+#     with DBConnector(engine) as session:
+#         print("SQLite подключение успешно!")
+#         # Пример добавления минерала
+#         existing = session.query(Mineral).filter_by(name="Quartz").first()
+#         if not existing:
+#             new_mineral = Mineral(name="Quartz", color="Clear", hardness=7.0)
+#             session.add(new_mineral)
+#             session.commit()
+#             print("Минерал добавлен успешно!")
+#         # Чтение всех минералов
+#         minerals = session.query(Mineral).all()
+#         for mineral in minerals:
+#             print(f"ID: {mineral.id}, Name: {mineral.name}, Color: {mineral.color}, Hardness: {mineral.hardness}")
+# except Exception as e:
+#     print(f"Ошибка при работе с SQLite: {e}")
+#
+# # MySQL
+# try:
+#     with DBConnector(mysql_engine) as session:
+#         print("MySQL подключение успешно!")
+#         # Тестовый запрос из вашего предыдущего контекста
+#         query = text("SELECT * FROM `091224ptm_Aleksandr`.`091224ptm_Aleksandr`")
+#         result = session.execute(query)
+#         for row in result.fetchall():
+#             print(row)
+# except Exception as e:
+#     print(f"Ошибка подключения или запроса к MySQL: {e}")
+#
+# # MongoDB
+# try:
+#     client = MongoClient(mongo_connection_string)
+#     client.server_info()  # Проверка подключения
+#     print("MongoDB подключение успешно!")
+#     db = client['ich_edit']
+#     print("Доступные коллекции:", db.list_collection_names())
+# except ConfigurationError as e:
+#     print(f"Ошибка конфигурации MongoDB: {e}")
+# except ConnectionFailure as e:
+#     print(f"Ошибка подключения к MongoDB: {e}")
+# except OperationFailure as e:
+#     print(f"Ошибка аутентификации MongoDB: {e}")
+# except Exception as e:
+#     print(f"Другая ошибка MongoDB: {e}")
+# finally:
+#     client.close()
+#
+#
+#     #######################################################
+#
+#     from pathlib import Path
+#     from sqlalchemy import create_engine, text, Column, Integer, String, Float
+#     from sqlalchemy.orm import sessionmaker, declarative_base
+#     from pymongo import MongoClient
+#     from pymongo.errors import ConfigurationError, ConnectionFailure, OperationFailure
+#
+#     # Путь к SQLite
+#     proj_path = Path(__file__).parent.parent.parent  # C:\Users\B.Nutzer\PycharmProjects\flaskProject
+#     engine = create_engine(
+#         url=f"sqlite:///{proj_path}/database.db",
+#         echo=True
+#     )
+#
+#     # Базовый класс
+#     Base = declarative_base()
+#
+#
+#     # Класс DBConnector
+#     class DBConnector:
+#         def __init__(self, engine):
+#             self.engine = engine
+#             self.Session = sessionmaker(bind=engine)
+#
+#         def __enter__(self):
+#             self.session = self.Session()
+#             return self.session
+#
+#         def __exit__(self, exc_type, exc_val, exc_tb):
+#             self.session.close()
+#
+#
+#     # Модель Mineral
+#     class Mineral(Base):
+#         __tablename__ = 'minerals'
+#         id = Column(Integer, primary_key=True)
+#         name = Column(String(50), unique=True, nullable=False)
+#         color = Column(String(150))  # Изменено на основе лога
+#         hardness = Column(Float)
+#
+#
+#     # MySQL
+#     mysql_engine = create_engine(
+#         url="mysql+pymysql://ich1:ich1_password_ilovedbs@ich-edit.edu.itcareerhub.de:3306/alchemy_lesson"
+#     )
+#
+#     # MongoDB
+#     mongo_connection_string = (
+#         "mongodb://ich_editor:verystrongpassword@mongo.itcareerhub.de:27017/"
+#         "?readPreference=primary&ssl=false&authMechanism=DEFAULT&authSource=ich_edit"
+#     )
+#
+#     # Создание таблиц
+#     Base.metadata.create_all(bind=engine)
+#
+#     # SQLite
+#     try:
+#         with DBConnector(engine) as session:
+#             print("SQLite подключение успешно!")
+#             existing = session.query(Mineral).filter_by(name="Quartz").first()
+#             if not existing:
+#                 new_mineral = Mineral(name="Quartz", color="Clear", hardness=7.0)
+#                 session.add(new_mineral)
+#                 session.commit()
+#                 print("Минерал добавлен успешно!")
+#             minerals = session.query(Mineral).all()
+#             for mineral in minerals:
+#                 print(f"ID: {mineral.id}, Name: {mineral.name}, Color: {mineral.color}, Hardness: {mineral.hardness}")
+#     except Exception as e:
+#         print(f"Ошибка при работе с SQLite: {e}")
+#
+#     # MySQL
+#     try:
+#         with DBConnector(mysql_engine) as session:
+#             print("MySQL подключение успешно!")
+#             query = text("SELECT * FROM `091224ptm_Aleksandr`.`091224ptm_Aleksandr`")
+#             result = session.execute(query)
+#             for row in result.fetchall():
+#                 print(row)
+#     except Exception as e:
+#         print(f"Ошибка подключения или запроса к MySQL: {e}")
+#
+#     # MongoDB
+#     try:
+#         client = MongoClient(mongo_connection_string)
+#         client.server_info()
+#         print("MongoDB подключение успешно!")
+#         db = client['ich_edit']
+#         print("Доступные коллекции:", db.list_collection_names())
+#     except ConfigurationError as e:
+#         print(f"Ошибка конфигурации MongoDB: {e}")
+#     except ConnectionFailure as e:
+#         print(f"Ошибка подключения к MongoDB: {e}")
+#     except OperationFailure as e:
+#         print(f"Ошибка аутентификации MongoDB: {e}")
+#     except Exception as e:
+#         print(f"Другая ошибка MongoDB: {e}")
+#     finally:
+#         client.close()
+#
+#     __all__ = ('engine', 'Base', 'DBConnector', 'Mineral')
+#
+#     ###########################################################
+#
+#     from pathlib import Path
+#     from sqlalchemy import create_engine, text, Column, Integer, String, Float, Date, ForeignKey
+#     from sqlalchemy.orm import sessionmaker, declarative_base, relationship
+#     from pymongo import MongoClient
+#     from pymongo.errors import ConfigurationError, ConnectionFailure, OperationFailure
+#     from datetime import date
+#
+#     # Путь к базе данных SQLite
+#     proj_path = Path(__file__).parent.parent.parent  # C:\Users\B.Nutzer\PycharmProjects\flaskProject
+#     engine = create_engine(
+#         url=f"sqlite:///{proj_path}/database.db",
+#         echo=True  # Для отладки SQL-запросов
+#     )
+#
+#     # Базовый класс для моделей
+#     Base = declarative_base()
+#
+#
+#     # Класс DBConnector
+#     class DBConnector:
+#         def __init__(self, engine):
+#             self.engine = engine
+#             self.Session = sessionmaker(bind=engine)
+#
+#         def __enter__(self):
+#             self.session = self.Session()
+#             return self.session
+#
+#         def __exit__(self, exc_type, exc_val, exc_tb):
+#             self.session.close()
+#
+#
+#     # Модель Mineral
+#     class Mineral(Base):
+#         __tablename__ = 'minerals'
+#         id = Column(Integer, primary_key=True)
+#         name = Column(String(50), unique=True, nullable=False)
+#         color = Column(String(150))  # Синхронизировано с вашим логом
+#         hardness = Column(Float)
+#         shipments = relationship("Shipment", back_populates="mineral")  # Связь с Shipment
+#
+#
+#     # Модель Shipment
+#     class Shipment(Base):
+#         __tablename__ = 'shipments'
+#         id = Column(Integer, primary_key=True)
+#         shipment_date = Column(Date, nullable=False)
+#         destination = Column(String(100), nullable=False)
+#         mineral_id = Column(Integer, ForeignKey('minerals.id'), nullable=False)
+#         mineral = relationship("Mineral", back_populates="shipments")  # Связь с Mineral
+#
+#
+#     # MySQL
+#     mysql_engine = create_engine(
+#         url="mysql+pymysql://ich1:ich1_password_ilovedbs@ich-edit.edu.itcareerhub.de:3306/alchemy_lesson"
+#     )
+#
+#     # MongoDB
+#     mongo_connection_string = (
+#         "mongodb://ich_editor:verystrongpassword@mongo.itcareerhub.de:27017/"
+#         "?readPreference=primary&ssl=false&authMechanism=DEFAULT&authSource=ich_edit"
+#     )
+#
+#     # Создание таблиц
+#     Base.metadata.create_all(bind=engine)
+#
+#     # SQLite
+#     try:
+#         with DBConnector(engine) as session:
+#             print("SQLite подключение успешно!")
+#             # Добавление минерала, если не существует
+#             existing_mineral = session.query(Mineral).filter_by(name="Quartz").first()
+#             if not existing_mineral:
+#                 new_mineral = Mineral(name="Quartz", color="Clear", hardness=7.0)
+#                 session.add(new_mineral)
+#                 session.commit()
+#                 print("Минерал добавлен успешно!")
+#
+#             # Добавление поставки
+#             existing_shipment = session.query(Shipment).filter_by(destination="Berlin").first()
+#             if not existing_shipment:
+#                 quartz = session.query(Mineral).filter_by(name="Quartz").first()
+#                 new_shipment = Shipment(
+#                     shipment_date=date(2025, 6, 16),
+#                     destination="Berlin",
+#                     mineral_id=quartz.id
+#                 )
+#                 session.add(new_shipment)
+#                 session.commit()
+#                 print("Поставка добавлена успешно!")
+#
+#             # Чтение минералов
+#             minerals = session.query(Mineral).all()
+#             for mineral in minerals:
+#                 print(f"ID: {mineral.id}, Name: {mineral.name}, Color: {mineral.color}, Hardness: {mineral.hardness}")
+#
+#             # Чтение поставок
+#             shipments = session.query(Shipment).all()
+#             for shipment in shipments:
+#                 mineral = session.get(Mineral, shipment.mineral_id)  # Исправлено с get()
+#                 mineral_name = mineral.name if mineral else "Unknown"
+#                 print(
+#                     f"Shipment ID: {shipment.id}, Date: {shipment.shipment_date}, Destination: {shipment.destination}, Mineral: {mineral_name}")
+#     except Exception as e:
+#         print(f"Ошибка при работе с SQLite: {e}")
+#
+#     # MySQL
+#     try:
+#         with DBConnector(mysql_engine) as session:
+#             print("MySQL подключение успешно!")
+#             query = text("SELECT * FROM `091224ptm_Aleksandr`.`091224ptm_Aleksandr`")
+#             result = session.execute(query)
+#             for row in result.fetchall():
+#                 print(row)
+#     except Exception as e:
+#         print(f"Ошибка подключения или запроса к MySQL: {e}")
+#
+#     # MongoDB
+#     try:
+#         client = MongoClient(mongo_connection_string)
+#         client.server_info()
+#         print("MongoDB подключение успешно!")
+#         db = client['ich_edit']
+#         print("Доступные коллекции:", db.list_collection_names())
+#     except ConfigurationError as e:
+#         print(f"Ошибка конфигурации MongoDB: {e}")
+#     except ConnectionFailure as e:
+#         print(f"Ошибка подключения к MongoDB: {e}")
+#     except OperationFailure as e:
+#         print(f"Ошибка аутентификации MongoDB: {e}")
+#     except Exception as e:
+#         print(f"Другая ошибка MongoDB: {e}")
+#     finally:
+#         client.close()
+#
+#     __all__ = ('engine', 'Base', 'DBConnector', 'Mineral', 'Shipment')
+
+
+# Задача 1. Создание модели Mineral
+# Создать таблицу минералов с полями:
+#
+# id: PK
+# name: уникальное имя (строка, макс. 50)
+# color: строка
+# hardness: значение по шкале Мооса, float
+
+from db_connector import engine, Base
+from sqlalchemy import Integer, String, Float, UniqueConstraint, Index, DateTime, ForeignKey, Column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from datetime import datetime
+
+from torch.utils.benchmark.utils.compare import Table
+
+
+class Mineral(Base):
+    __tablename__ = 'mineral'
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(String(255))
+    color: Mapped[str] = mapped_column(String(255))
+    hardness: Mapped[float] = mapped_column(Float)
+
+    shipments_info: Mapped[list['Shipment']] = relationship('Shipment', back_populates='mineral_info')
+
+# Задача 2. Создание модели Salon
+# Создать модель элитного бутика. Поля:
+#
+# id: PK
+# name: название
+# location: строка
+# Пара (name, location) должна быть уникальна.
+
+class Salon(Base):
+    __tablename__ = "salons"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(50))
+    location: Mapped[str] = mapped_column(String(150))
+
+    __table_args__ = (
+        UniqueConstraint(
+            'name',
+            'location',
+            name='unq_name_location'
+        ),
+        Index(
+            'idx_name_location',
+            'name',
+            'location'
+        )
+    )
+
+# Задача 3. Создание модели Shipment
+# Модель поставки минерала. Поля:
+#
+# id: PK
+# shipment_date: дата
+# destination: строка
+# mineral_id: FK - ForeignKey
+
+class Shipment(Base):
+    __tablename__ = "shipments"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    shipment_date: Mapped[datetime] = mapped_column(DateTime)
+    destination: Mapped[str] = mapped_column(String(150))
+    mineral_id: Mapped[int] = mapped_column(ForeignKey('mineral.id')) #ForeignKey (o2m - one to many)
+
+    mineral_info: Mapped[list[Mineral]] = relationship('Mineral', back_populates='shipments_info')
+
+# Задача 7. Связь Salon и Shipment через M2M
+#
+# Один Shipment может быть доставлен в несколько салонов
+# Один Salon может принимать разные Shipment
+# Настроить Many-to-Many через таблицу salon_shipment_association
+salon_shipment_association = Table(
+    "salon_shipments", Base.metadata , Column("salon_id", ForeignKey('salons.id'), primary_key=True),
+Column("shipment_id", ForeignKey('shipments.id'), primary_key=True)
+
+)
+
+
+
 
